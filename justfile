@@ -1,10 +1,16 @@
 _help:
-	@just --list
+    @just --list
 
 watch:
     @air -c config/air.toml
 
 push message="chore: update":
     @git add .
-    @git commit -m "{{message}}"
+    @git commit -m "{{ message }}"
     @git push
+
+fmt:
+    @go fmt ./...
+
+lint: fmt
+    @golangci-lint run
