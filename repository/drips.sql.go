@@ -13,7 +13,8 @@ import (
 )
 
 const createDrip = `-- name: CreateDrip :one
-INSERT INTO drips (droplet_id, increases, amount_cents, metadata) VALUES ($1, $2, $3, $4) RETURNING id, droplet_id, increases, amount_cents, created_at, updated_at, metadata
+INSERT INTO drips (droplet_id, increases, amount_cents, metadata)
+VALUES ($1, $2, $3, $4) RETURNING id, droplet_id, increases, amount_cents, created_at, updated_at, metadata
 `
 
 type CreateDripParams struct {

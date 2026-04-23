@@ -73,3 +73,28 @@ func (q *Queries) GetBuckets(ctx context.Context) ([]Bucket, error) {
 	}
 	return items, nil
 }
+
+const getCurrentBucketBalance = `-- name: GetCurrentBucketBalance :one
+SELECT
+    COALESCE(SUM(d.initial_balance_cents), 0) +
+    COALESCE((
+        SELECT SUM(
+            CASE
+                WHEN dr.increases = true THEN dr.amount_cents
+                ELSE -dr.amount_cents
+            END
+        )
+        FROM drips dr
+        JOIN droplets inner_d ON dr.droplet_id = inner_d.id
+        WHERE inner_d.bucket_id = $1
+    ), 0) AS total_bucket_balance
+FROM droplets d
+WHERE d.bucket_id = $1
+`
+
+func (q *Queries) GetCurrentBucketBalance(ctx context.Context, bucketID uuid.UUID) (int32, error) {
+	row := q.db.QueryRow(ctx, getCurrentBucketBalance, bucketID)
+	var total_bucket_balance int32
+	err := row.Scan(&total_bucket_balance)
+	return total_bucket_balance, err
+}

@@ -36,6 +36,27 @@ func (q *Queries) CreateDroplet(ctx context.Context, arg CreateDropletParams) (D
 	return i, err
 }
 
+const getCurrentDropletBalance = `-- name: GetCurrentDropletBalance :one
+WITH drip_totals AS (
+    SELECT
+        COALESCE(SUM(amount_cents) FILTER (WHERE increases = true), 0) AS pos_var,
+        COALESCE(SUM(amount_cents) FILTER (WHERE increases = false), 0) AS neg_var
+    FROM drips
+    WHERE droplet_id = $1
+)
+SELECT d.initial_balance_cents + t.pos_var - t.neg_var AS current_balance
+FROM droplets d
+CROSS JOIN drip_totals t
+WHERE d.id = $1
+`
+
+func (q *Queries) GetCurrentDropletBalance(ctx context.Context, id uuid.UUID) (int32, error) {
+	row := q.db.QueryRow(ctx, getCurrentDropletBalance, id)
+	var current_balance int32
+	err := row.Scan(&current_balance)
+	return current_balance, err
+}
+
 const getDropletById = `-- name: GetDropletById :one
 SELECT id, bucket_id, name, initial_balance_cents, created_at, updated_at, metadata FROM droplets WHERE id = $1
 `
