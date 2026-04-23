@@ -19,6 +19,13 @@ fmt:
 lint: fmt
     @golangci-lint run
 
+# Run SQLC code generation
+[group('ci')]
+gen:
+    @cp config/sqlc.yaml .
+    @sqlc generate
+    @rm sqlc.yaml
+
 [group('dev')]
 [group('docker')]
 start-env:
