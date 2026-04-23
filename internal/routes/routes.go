@@ -6,7 +6,7 @@ func Register(app *fiber.App) {
 	app.Get("/", func(c fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(
 			fiber.Map{
-				"name":    "thalestmm-don",
+				"name":    "don",
 				"version": "0.0.0",
 			},
 		)

@@ -28,3 +28,8 @@ start-env:
 [group('docker')]
 stop-env:
     @docker compose -f deployments/docker-compose.local.yml down
+
+[group('dev')]
+[group('docker')]
+docker-build:
+    @docker build -t don:dev . -f build/Dockerfile
