@@ -13,7 +13,10 @@ push message="chore: update":
 
 [group('ci')]
 build:
+    @echo "Building...\n"
     @go build -o tmp/main .
+    @echo "Total byte size:"
+    @stat -f%z tmp/main
 
 [group('ci')]
 fmt:
