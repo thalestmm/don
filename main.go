@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	tea "charm.land/bubbletea/v2"
 )
@@ -39,18 +40,35 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() tea.View {
-	s := UIComponentAppTitle
+	var sb strings.Builder
 
-	s += UIComponentExitInstructions
+	sb.WriteString(UIComponentAppTitle)
 
-	v := tea.NewView(s)
+	for i, child := range m.children {
+		r := Row{
+			content:    child.Title(),
+			isSelected: false,
+		}
+		if m.cursor == i {
+			r.isSelected = true
+		}
+		sb.WriteString(r.Render())
+	}
+
+	sb.WriteString(UIComponentExitInstructions)
+
+	v := tea.NewView(sb.String())
 	v.AltScreen = true
 
 	return v
 }
 
 func main() {
-	p := tea.NewProgram(model{})
+	baseChildren := []AppModel{}
+	p := tea.NewProgram(model{
+		cursor:   0,
+		children: baseChildren,
+	})
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Oops! %v", err)
 		os.Exit(1)
