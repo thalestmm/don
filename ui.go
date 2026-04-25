@@ -2,6 +2,7 @@ package main
 
 import "charm.land/lipgloss/v2"
 
+// Shared styles
 var DocStyle = lipgloss.NewStyle().MarginLeft(3)
 var HeaderStyle = DocStyle.MarginTop(2)
 var FooterStyle = DocStyle.MarginTop(2)
