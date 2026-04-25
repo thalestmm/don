@@ -1,6 +1,10 @@
 package main
 
-import tea "charm.land/bubbletea/v2"
+import (
+	"strings"
+
+	tea "charm.land/bubbletea/v2"
+)
 
 type AppModel interface {
 	tea.Model // Init, Update, View
@@ -28,9 +32,24 @@ func (bp BucketsPage) Init() tea.Cmd {
 }
 
 func (bp BucketsPage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyPressMsg:
+		switch msg.String() {
+		case "ctrl+c", "q":
+			return bp, tea.Quit
+		}
+	}
 	return bp, nil
 }
 
 func (bp BucketsPage) View() tea.View {
-	return tea.NewView(bp.Title())
+	var sb strings.Builder
+
+	sb.WriteString(UIComponentAppTitle)
+	sb.WriteString(UIComponentExitInstructions)
+
+	v := tea.NewView(sb.String())
+	v.AltScreen = true
+
+	return v
 }
