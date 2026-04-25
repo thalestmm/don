@@ -47,3 +47,8 @@ stop-env:
 [group('docker')]
 docker-build:
     @docker build -t don:dev . -f build/Dockerfile
+
+[group('dev')]
+[group('docker')]
+docker-run:
+    @docker run -it don:dev
