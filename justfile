@@ -2,8 +2,8 @@ _help:
     @just --list
 
 [group('dev')]
-watch:
-    @air -c config/air.toml
+run:
+    @go run .
 
 [group('dev')]
 push message="chore: update":
