@@ -26,7 +26,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() tea.View {
-	return tea.NewView("don")
+	v := tea.NewView(UIComponentAppTitle + UIComponentExitInstructions)
+	v.AltScreen = true
+
+	return v
 }
 
 func main() {
