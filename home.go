@@ -7,18 +7,45 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
+type pageModel struct{}
+
+type Page struct {
+	method func() pageModel
+}
+
+type Command struct {
+	label    string
+	code     string
+	redirect Page
+}
+
 type homePageModel struct {
 	cursor   int
-	commands []string
+	commands []Command
 	choice   map[int]struct{}
 	quitting bool
 }
 
 func initialHomePageModel() homePageModel {
 	return homePageModel{
-		cursor:   0,
-		commands: []string{"Register drip", "List buckets"},
-		choice:   make(map[int]struct{}),
+		cursor: 0,
+		commands: []Command{
+			Command{
+				label: "Register drip",
+				code:  "drips.register",
+				redirect: Page{
+					method: func() pageModel { return pageModel{} },
+				},
+			},
+			Command{
+				label: "List buckets",
+				code:  "buckets.list",
+				redirect: Page{
+					method: func() pageModel { return pageModel{} },
+				},
+			},
+		},
+		choice: make(map[int]struct{}),
 	}
 }
 
@@ -79,9 +106,9 @@ func (m homePageModel) View() tea.View {
 		cursor := " "
 		if m.cursor == i {
 			cursor = ">"
-			comp += selectedRowStyle.Render(fmt.Sprintf("%s %s", cursor, cmd))
+			comp += selectedRowStyle.Render(fmt.Sprintf("%s %s", cursor, cmd.label))
 		} else {
-			comp += unselectedRowStyle.Render(fmt.Sprintf("%s %s", cursor, cmd))
+			comp += unselectedRowStyle.Render(fmt.Sprintf("%s %s", cursor, cmd.label))
 		}
 	}
 
