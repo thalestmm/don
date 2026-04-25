@@ -7,23 +7,17 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-type pageModel struct{}
-
-type Page struct {
-	method func() pageModel
-}
-
 type Command struct {
-	label    string
-	code     string // For future logging
-	redirect Page
+	label string
+	code  string // For future logging
 }
 
 type homePageModel struct {
-	cursor   int
-	commands []Command
-	choice   map[int]struct{}
-	quitting bool
+	cursor          int
+	commands        []Command
+	choice          map[int]struct{}
+	selectedCommand Command
+	quitting        bool
 }
 
 func initialHomePageModel() homePageModel {
@@ -33,16 +27,10 @@ func initialHomePageModel() homePageModel {
 			Command{
 				label: "Register drip",
 				code:  "drips.register",
-				redirect: Page{
-					method: func() pageModel { return pageModel{} },
-				},
 			},
 			Command{
 				label: "List buckets",
 				code:  "buckets.list",
-				redirect: Page{
-					method: func() pageModel { return pageModel{} },
-				},
 			},
 		},
 		choice: make(map[int]struct{}),
@@ -66,7 +54,8 @@ func (m homePageModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.cursor++
 			}
 		case "enter", "space":
-			return m, tea.Printf(fmt.Sprintf(">>> %s", m.commands[m.cursor].code))
+			m.selectedCommand = m.commands[m.cursor]
+			return m, tea.Printf(fmt.Sprintf(">>> %s", m.selectedCommand.code))
 
 		case "ctrl+c", "q":
 			m.quitting = true
@@ -105,15 +94,19 @@ func (m homePageModel) View() tea.View {
 		MarginTop(3).
 		MarginLeft(3)
 
+	// Render body
+	// Home page (select command)
 	for i, cmd := range m.commands {
 		cursor := " "
 		if m.cursor == i {
-			cursor = ">"
+			cursor = "→"
 			comp += selectedRowStyle.Render(fmt.Sprintf("%s %s", cursor, cmd.label))
 		} else {
 			comp += unselectedRowStyle.Render(fmt.Sprintf("%s %s", cursor, cmd.label))
 		}
 	}
+
+	// List buckets page
 
 	comp += footerStyle.Render("Press 'q' to exit.")
 
