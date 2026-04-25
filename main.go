@@ -66,13 +66,17 @@ func (m model) View() tea.View {
 	return v
 }
 
-func main() {
+func HomePage() model {
 	bp := BucketsPage{}
 	baseChildren := []AppModel{bp}
-	p := tea.NewProgram(model{
+	return model{
 		cursor:   0,
 		children: baseChildren,
-	})
+	}
+}
+
+func main() {
+	p := tea.NewProgram(HomePage())
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Oops! %v", err)
 		os.Exit(1)

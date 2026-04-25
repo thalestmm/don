@@ -11,6 +11,7 @@ type AppModel interface {
 	Title() string
 	Description() string
 	Children() []AppModel
+	Previous() tea.Model
 }
 
 type BucketsPage struct{}
@@ -27,6 +28,10 @@ func (bp BucketsPage) Children() []AppModel {
 	return []AppModel{}
 }
 
+func (bp BucketsPage) Previous() tea.Model {
+	return HomePage()
+}
+
 func (bp BucketsPage) Init() tea.Cmd {
 	return nil
 }
@@ -35,6 +40,8 @@ func (bp BucketsPage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
 		switch msg.String() {
+		case "left", "p":
+			return bp.Previous(), nil
 		case "ctrl+c", "q":
 			return bp, tea.Quit
 		}
@@ -52,7 +59,7 @@ func (bp BucketsPage) View() tea.View {
 	}
 
 	sb.WriteString(ad.Render())
-	sb.WriteString(UIComponentExitInstructions)
+	sb.WriteString(UIComponentNavigationInstructions)
 
 	v := tea.NewView(sb.String())
 	v.AltScreen = true
