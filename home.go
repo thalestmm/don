@@ -15,7 +15,7 @@ type Page struct {
 
 type Command struct {
 	label    string
-	code     string
+	code     string // For future logging
 	redirect Page
 }
 
@@ -65,6 +65,9 @@ func (m homePageModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.cursor < len(m.commands)-1 {
 				m.cursor++
 			}
+		case "enter", "space":
+			return m, tea.Printf(fmt.Sprintf(">>> %s", m.commands[m.cursor].code))
+
 		case "ctrl+c", "q":
 			m.quitting = true
 			return m, tea.Quit
@@ -98,7 +101,7 @@ func (m homePageModel) View() tea.View {
 
 	footerStyle := lipgloss.NewStyle().
 		Italic(true).
-		Foreground(lipgloss.Color("#1A1A1A")).
+		Foreground(lipgloss.Color("#6A6A6A")).
 		MarginTop(3).
 		MarginLeft(3)
 
