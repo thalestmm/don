@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 )
@@ -60,23 +62,26 @@ func (m homePageModel) View() tea.View {
 
 	rowStyle := lipgloss.NewStyle().
 		MarginTop(1).
-		MarginLeft(3)
+		MarginLeft(1)
+
+	unselectedRowStyle := rowStyle
 
 	selectedRowStyle := rowStyle.
-		Bold(true).
-		MarginLeft(4)
+		Bold(true)
 
 	footerStyle := lipgloss.NewStyle().
 		Italic(true).
 		Foreground(lipgloss.Color("#1A1A1A")).
-		MarginTop(2).
+		MarginTop(3).
 		MarginLeft(3)
 
 	for i, cmd := range m.commands {
+		cursor := " "
 		if m.cursor == i {
-			comp += selectedRowStyle.Render(cmd)
+			cursor = ">"
+			comp += selectedRowStyle.Render(fmt.Sprintf("%s %s", cursor, cmd))
 		} else {
-			comp += rowStyle.Render(cmd)
+			comp += unselectedRowStyle.Render(fmt.Sprintf("%s %s", cursor, cmd))
 		}
 	}
 
