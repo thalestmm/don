@@ -30,6 +30,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.cursor++
 			}
 		case "enter", "space":
+			if len(m.children) == 0 { // No registered children, do nothing
+				return m, nil
+			}
 			choice := m.children[m.cursor]
 			return choice, choice.Init()
 		case "ctrl+c", "q":
