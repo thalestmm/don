@@ -7,7 +7,7 @@ import (
 )
 
 type AppModel interface {
-	tea.Model // Init, Update, View
+	tea.Model // Init() tea.Cmd, Update(msg tea.Msg) (tea.Model, tea.Cmd), View() tea.View
 	Title() string
 	Description() string
 	Children() []AppModel
