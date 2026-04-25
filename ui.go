@@ -36,3 +36,11 @@ func (r Row) Render() string {
 	}
 	return UnselectedRowStyle.Render(fmt.Sprintf("%s %s", cursor, r.content))
 }
+
+type AppDescription struct {
+	content string
+}
+
+func (ad AppDescription) Render() string {
+	return DocStyle.Italic(true).Foreground(lipgloss.Color("#4f4f4f")).MarginTop(1).MarginBottom(1).Render(ad.content)
+}

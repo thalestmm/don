@@ -20,7 +20,7 @@ func (bp BucketsPage) Title() string {
 }
 
 func (bp BucketsPage) Description() string {
-	return "Buckets are the main aggregators for your finances"
+	return "Buckets are the main aggregators for your finances."
 }
 
 func (bp BucketsPage) Children() []AppModel {
@@ -46,6 +46,12 @@ func (bp BucketsPage) View() tea.View {
 	var sb strings.Builder
 
 	sb.WriteString(UIComponentAppTitle)
+
+	ad := AppDescription{
+		content: bp.Description(),
+	}
+
+	sb.WriteString(ad.Render())
 	sb.WriteString(UIComponentExitInstructions)
 
 	v := tea.NewView(sb.String())
