@@ -33,7 +33,7 @@ func (m homePageModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.cursor--
 			}
 		case "down", "j":
-			if m.cursor > len(m.commands)-1 {
+			if m.cursor < len(m.commands)-1 {
 				m.cursor++
 			}
 		case "ctrl+c", "q":
