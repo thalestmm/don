@@ -28,6 +28,14 @@ func (m homePageModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
 		switch msg.String() {
+		case "up", "k":
+			if m.cursor > 0 {
+				m.cursor--
+			}
+		case "down", "j":
+			if m.cursor > len(m.commands)-1 {
+				m.cursor++
+			}
 		case "ctrl+c", "q":
 			m.quitting = true
 			return m, tea.Quit
@@ -41,6 +49,7 @@ func (m homePageModel) View() tea.View {
 		Bold(true).
 		Foreground(lipgloss.Color("#FFC130")).
 		MarginTop(1).
+		MarginBottom(2).
 		MarginLeft(3)
 
 	title := headerStyle.Render("don")
@@ -50,10 +59,12 @@ func (m homePageModel) View() tea.View {
 	).Render()
 
 	rowStyle := lipgloss.NewStyle().
+		MarginTop(1).
 		MarginLeft(3)
 
 	selectedRowStyle := rowStyle.
-		Bold(true)
+		Bold(true).
+		MarginLeft(4)
 
 	footerStyle := lipgloss.NewStyle().
 		Italic(true).
@@ -61,10 +72,15 @@ func (m homePageModel) View() tea.View {
 		MarginTop(2).
 		MarginLeft(3)
 
-	comp += "\n\n"
-	comp += rowStyle.Render("Testing")
-	comp += selectedRowStyle.Render("Bold")
-	comp += footerStyle.Render("Press q to exit.")
+	for i, cmd := range m.commands {
+		if m.cursor == i {
+			comp += selectedRowStyle.Render(cmd)
+		} else {
+			comp += rowStyle.Render(cmd)
+		}
+	}
+
+	comp += footerStyle.Render("Press 'q' to exit.")
 
 	v := tea.NewView(comp)
 	v.AltScreen = true
