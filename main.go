@@ -67,7 +67,8 @@ func (m model) View() tea.View {
 }
 
 func main() {
-	baseChildren := []AppModel{}
+	bp := BucketsPage{}
+	baseChildren := []AppModel{bp}
 	p := tea.NewProgram(model{
 		cursor:   0,
 		children: baseChildren,

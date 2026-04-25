@@ -1,10 +1,14 @@
 package main
 
-import "charm.land/lipgloss/v2"
+import (
+	"fmt"
+
+	"charm.land/lipgloss/v2"
+)
 
 // Shared styles
 var DocStyle = lipgloss.NewStyle().MarginLeft(3)
-var HeaderStyle = DocStyle.MarginTop(2)
+var HeaderStyle = DocStyle.MarginTop(2).MarginBottom(1)
 var FooterStyle = DocStyle.MarginTop(2)
 
 var BaseRowStyle = DocStyle.MarginTop(1).MarginLeft(1)
@@ -28,7 +32,7 @@ func (r Row) Render() string {
 	cursor := " "
 	if r.isSelected {
 		cursor = "→"
-		return SelectedRowStyle.Render("%s %s", cursor, r.content)
+		return SelectedRowStyle.Render(fmt.Sprintf("%s %s", cursor, r.content))
 	}
-	return UnselectedRowStyle.Render("%s %s", cursor, r.content)
+	return UnselectedRowStyle.Render(fmt.Sprintf("%s %s", cursor, r.content))
 }
