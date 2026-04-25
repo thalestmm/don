@@ -12,6 +12,10 @@ push message="chore: update":
     @git push
 
 [group('ci')]
+build:
+    @go build -o tmp/main .
+
+[group('ci')]
 fmt:
     @go fmt ./...
 
