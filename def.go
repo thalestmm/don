@@ -41,7 +41,7 @@ func (bp BucketsPage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "left", "p":
-			return bp.Previous(), nil
+			return bp.Previous(), bp.Previous().Init()
 		case "ctrl+c", "q":
 			return bp, tea.Quit
 		}
