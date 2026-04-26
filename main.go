@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+	// Parse flags
 	debug := flag.Bool("debug", false, "Wether to write debug logs to tmp/debug.log")
 	flag.Parse()
 	if *debug {
@@ -19,6 +20,15 @@ func main() {
 		}
 		defer f.Close()
 	}
+
+	// Load config from environment
+	_, err := LoadConfig() // TODO: Inject cfg into models
+	if err != nil {
+		fmt.Printf("Oops! %v", err)
+		os.Exit(1)
+	}
+
+	// New bubbletea program
 	p := tea.NewProgram(GetHomePage())
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Oops! %v", err)

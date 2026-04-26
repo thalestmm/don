@@ -26,7 +26,7 @@ func LoadConfig() (*Config, error) {
 	var cfg Config
 	if err := env.Parse(&cfg); err != nil {
 		slog.Error(err.Error())
-		return nil, fmt.Errorf("Error parsing environment into Config")
+		return nil, fmt.Errorf("Error parsing environment into cfg")
 	}
 	return &cfg, nil
 }
