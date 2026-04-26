@@ -61,7 +61,7 @@ func (hp HomePage) View() tea.View {
 
 	currentBalance := 11653200 // TODO: Query actual value
 	balance := Balance{
-		currency: "USD",
+		currency: CURRENCY,
 		amount:   currentBalance,
 		goalPct:  float32(currentBalance) / float32(FUCK_IT_MONEY_CENTS) * 100,
 	}
