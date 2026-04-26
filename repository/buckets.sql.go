@@ -13,29 +13,22 @@ import (
 )
 
 const createBucket = `-- name: CreateBucket :one
-INSERT INTO buckets (id, name, kind, metadata)
-VALUES ($1, $2, $3, $4) RETURNING id, name, kind, created_at, updated_at, metadata
+INSERT INTO buckets (id, name, metadata)
+VALUES ($1, $2, $3) RETURNING id, name, created_at, updated_at, metadata
 `
 
 type CreateBucketParams struct {
 	ID       uuid.UUID
 	Name     string
-	Kind     string
 	Metadata json.RawMessage
 }
 
 func (q *Queries) CreateBucket(ctx context.Context, arg CreateBucketParams) (Bucket, error) {
-	row := q.db.QueryRow(ctx, createBucket,
-		arg.ID,
-		arg.Name,
-		arg.Kind,
-		arg.Metadata,
-	)
+	row := q.db.QueryRow(ctx, createBucket, arg.ID, arg.Name, arg.Metadata)
 	var i Bucket
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.Kind,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Metadata,
@@ -44,7 +37,7 @@ func (q *Queries) CreateBucket(ctx context.Context, arg CreateBucketParams) (Buc
 }
 
 const getBuckets = `-- name: GetBuckets :many
-SELECT id, name, kind, created_at, updated_at, metadata FROM buckets
+SELECT id, name, created_at, updated_at, metadata FROM buckets
 `
 
 func (q *Queries) GetBuckets(ctx context.Context) ([]Bucket, error) {
@@ -59,7 +52,6 @@ func (q *Queries) GetBuckets(ctx context.Context) ([]Bucket, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
-			&i.Kind,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Metadata,

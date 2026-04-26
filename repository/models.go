@@ -14,7 +14,6 @@ import (
 type Bucket struct {
 	ID        uuid.UUID
 	Name      string
-	Kind      string
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
 	Metadata  json.RawMessage

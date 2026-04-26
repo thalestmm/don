@@ -2,7 +2,6 @@
 CREATE TABLE buckets (
     id UUID PRIMARY KEY,
     name TEXT NOT NULL,
-    kind TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     metadata JSONB NOT NULL DEFAULT '{}'::JSONB

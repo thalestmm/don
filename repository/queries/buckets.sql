@@ -2,8 +2,8 @@
 SELECT * FROM buckets;
 
 -- name: CreateBucket :one
-INSERT INTO buckets (id, name, kind, metadata)
-VALUES ($1, $2, $3, $4) RETURNING *;
+INSERT INTO buckets (id, name, metadata)
+VALUES ($1, $2, $3) RETURNING *;
 
 -- name: GetCurrentBucketBalance :one
 SELECT
