@@ -59,9 +59,11 @@ func (hp HomePage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (hp HomePage) View() tea.View {
 	var sb strings.Builder
 
+	currentBalance := 11653200 // TODO: Query actual value
 	balance := Balance{
 		currency: "USD",
-		amount:   11653200, // TODO: Query actual value
+		amount:   currentBalance,
+		goalPct:  float32(currentBalance) / float32(FUCK_IT_MONEY_CENTS) * 100,
 	}
 
 	comp := lipgloss.NewCompositor(

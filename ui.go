@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"charm.land/lipgloss/v2"
 )
@@ -51,10 +52,18 @@ func (ad AppDescription) Render() string {
 type Balance struct {
 	currency string
 	amount   int // cents
+	goalPct  float32
 	x        int
 }
 
 func (b Balance) Render() string {
+	var sb strings.Builder
 	displayAmount := float32(b.amount) / 100
-	return BalanceStyle.Render(fmt.Sprintf("%s %.2f", b.currency, displayAmount))
+
+	sb.WriteString(BalanceStyle.MarginRight(0).Render(fmt.Sprintf("%s %.2f", b.currency, displayAmount)))
+	sb.WriteString(lipgloss.NewStyle().Render(" / "))
+	// TODO: Make this color dynamic (how far vs how close to goal)
+	sb.WriteString(lipgloss.NewStyle().MarginRight(1).Bold(true).Foreground(lipgloss.Color("#FF1A1A")).Render(fmt.Sprintf("%.2f%s", b.goalPct, "%")))
+
+	return sb.String()
 }
