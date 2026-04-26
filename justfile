@@ -3,7 +3,7 @@ _help:
 
 [group('dev')]
 run:
-    @go run .
+    @go run . --debug
 
 [group('dev')]
 push message="chore: update":

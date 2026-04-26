@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -94,12 +95,16 @@ func HomePage() model {
 }
 
 func main() {
-	f, err := tea.LogToFile("tmp/debug.log", "debug")
-	if err != nil {
-		fmt.Printf("Oops! Error starting logs: %v", err)
-		os.Exit(1)
+	debug := flag.Bool("debug", false, "Wether to write debug logs to tmp/debug.log")
+	flag.Parse()
+	if *debug {
+		f, err := tea.LogToFile("tmp/debug.log", "debug")
+		if err != nil {
+			fmt.Printf("Oops! Error starting logs: %v", err)
+			os.Exit(1)
+		}
+		defer f.Close()
 	}
-	defer f.Close()
 	p := tea.NewProgram(HomePage())
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Oops! %v", err)
