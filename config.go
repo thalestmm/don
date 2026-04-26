@@ -15,7 +15,9 @@ const (
 )
 
 type Config struct {
-	Currency string `env:"CURRENCY" envDefault:"USD"`
+	Debug       bool   `env:"DEBUG" envDefault:"false"`
+	LogFilepath string `env:"LOG_FILEPATH" envDefault:"tmp/debug.log"`
+	Currency    string `env:"CURRENCY" envDefault:"USD"`
 }
 
 func LoadConfig() (*Config, error) {

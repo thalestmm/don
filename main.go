@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 
@@ -9,23 +8,23 @@ import (
 )
 
 func main() {
+	// Load config from environment
+	cfg, err := LoadConfig() // TODO: Inject cfg into models
+	if err != nil {
+		fmt.Printf("Oops! %v", err)
+		os.Exit(1)
+	}
+
 	// Parse flags
-	debug := flag.Bool("debug", false, "Wether to write debug logs to tmp/debug.log")
-	flag.Parse()
-	if *debug {
-		f, err := tea.LogToFile("tmp/debug.log", "debug")
+	// debug := flag.Bool("debug", false, "Wether to write debug logs to tmp/debug.log")
+	// flag.Parse()
+	if cfg.Debug {
+		f, err := tea.LogToFile(cfg.LogFilepath, "debug")
 		if err != nil {
 			fmt.Printf("Oops! Error starting logs: %v", err)
 			os.Exit(1)
 		}
 		defer f.Close()
-	}
-
-	// Load config from environment
-	_, err := LoadConfig() // TODO: Inject cfg into models
-	if err != nil {
-		fmt.Printf("Oops! %v", err)
-		os.Exit(1)
 	}
 
 	// New bubbletea program
