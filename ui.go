@@ -63,7 +63,7 @@ func (b Balance) Render() string {
 	sb.WriteString(BalanceStyle.MarginRight(0).Render(fmt.Sprintf("%s %.2f", b.currency, displayAmount)))
 	sb.WriteString(lipgloss.NewStyle().Render(" / "))
 	// TODO: Make this color dynamic (how far vs how close to goal)
-	sb.WriteString(lipgloss.NewStyle().MarginRight(1).Bold(true).Foreground(lipgloss.Color("#FF1A1A")).Render(fmt.Sprintf("%.2f%s", b.goalPct, "%")))
+	sb.WriteString(lipgloss.NewStyle().MarginRight(1).Bold(true).Foreground(lipgloss.Color("#FF1A1A")).Render(fmt.Sprintf("%.2f%%", b.goalPct)))
 
 	return sb.String()
 }
