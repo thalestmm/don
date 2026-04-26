@@ -14,27 +14,17 @@ import (
 type Bucket struct {
 	ID        uuid.UUID
 	Name      string
+	Slug      string
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
 	Metadata  json.RawMessage
 }
 
-type Drip struct {
+type Droplet struct {
 	ID          uuid.UUID
-	DropletID   uuid.UUID
+	BucketID    uuid.UUID
 	Increases   bool
 	AmountCents int32
 	CreatedAt   pgtype.Timestamptz
-	UpdatedAt   pgtype.Timestamptz
 	Metadata    json.RawMessage
-}
-
-type Droplet struct {
-	ID                  uuid.UUID
-	BucketID            uuid.UUID
-	Name                string
-	InitialBalanceCents int32
-	CreatedAt           pgtype.Timestamptz
-	UpdatedAt           pgtype.Timestamptz
-	Metadata            json.RawMessage
 }

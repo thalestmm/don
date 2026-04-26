@@ -7,58 +7,43 @@ package repository
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/google/uuid"
 )
 
 const createDroplet = `-- name: CreateDroplet :one
-INSERT INTO droplets (bucket_id, name, initial_balance_cents) VALUES ($1, $2, $3) RETURNING id, bucket_id, name, initial_balance_cents, created_at, updated_at, metadata
+INSERT INTO droplets (bucket_id, increases, amount_cents, metadata) VALUES ($1, $2, $3, $4) RETURNING id, bucket_id, increases, amount_cents, created_at, metadata
 `
 
 type CreateDropletParams struct {
-	BucketID            uuid.UUID
-	Name                string
-	InitialBalanceCents int32
+	BucketID    uuid.UUID
+	Increases   bool
+	AmountCents int32
+	Metadata    json.RawMessage
 }
 
 func (q *Queries) CreateDroplet(ctx context.Context, arg CreateDropletParams) (Droplet, error) {
-	row := q.db.QueryRow(ctx, createDroplet, arg.BucketID, arg.Name, arg.InitialBalanceCents)
+	row := q.db.QueryRow(ctx, createDroplet,
+		arg.BucketID,
+		arg.Increases,
+		arg.AmountCents,
+		arg.Metadata,
+	)
 	var i Droplet
 	err := row.Scan(
 		&i.ID,
 		&i.BucketID,
-		&i.Name,
-		&i.InitialBalanceCents,
+		&i.Increases,
+		&i.AmountCents,
 		&i.CreatedAt,
-		&i.UpdatedAt,
 		&i.Metadata,
 	)
 	return i, err
 }
 
-const getCurrentDropletBalance = `-- name: GetCurrentDropletBalance :one
-WITH drip_totals AS (
-    SELECT
-        COALESCE(SUM(amount_cents) FILTER (WHERE increases = true), 0) AS pos_var,
-        COALESCE(SUM(amount_cents) FILTER (WHERE increases = false), 0) AS neg_var
-    FROM drips
-    WHERE droplet_id = $1
-)
-SELECT d.initial_balance_cents + t.pos_var - t.neg_var AS current_balance
-FROM droplets d
-CROSS JOIN drip_totals t
-WHERE d.id = $1
-`
-
-func (q *Queries) GetCurrentDropletBalance(ctx context.Context, id uuid.UUID) (int32, error) {
-	row := q.db.QueryRow(ctx, getCurrentDropletBalance, id)
-	var current_balance int32
-	err := row.Scan(&current_balance)
-	return current_balance, err
-}
-
 const getDropletById = `-- name: GetDropletById :one
-SELECT id, bucket_id, name, initial_balance_cents, created_at, updated_at, metadata FROM droplets WHERE id = $1
+SELECT id, bucket_id, increases, amount_cents, created_at, metadata FROM droplets WHERE id = $1
 `
 
 func (q *Queries) GetDropletById(ctx context.Context, id uuid.UUID) (Droplet, error) {
@@ -67,17 +52,16 @@ func (q *Queries) GetDropletById(ctx context.Context, id uuid.UUID) (Droplet, er
 	err := row.Scan(
 		&i.ID,
 		&i.BucketID,
-		&i.Name,
-		&i.InitialBalanceCents,
+		&i.Increases,
+		&i.AmountCents,
 		&i.CreatedAt,
-		&i.UpdatedAt,
 		&i.Metadata,
 	)
 	return i, err
 }
 
 const getDroplets = `-- name: GetDroplets :many
-SELECT id, bucket_id, name, initial_balance_cents, created_at, updated_at, metadata FROM droplets
+SELECT id, bucket_id, increases, amount_cents, created_at, metadata FROM droplets
 `
 
 func (q *Queries) GetDroplets(ctx context.Context) ([]Droplet, error) {
@@ -92,10 +76,9 @@ func (q *Queries) GetDroplets(ctx context.Context) ([]Droplet, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.BucketID,
-			&i.Name,
-			&i.InitialBalanceCents,
+			&i.Increases,
+			&i.AmountCents,
 			&i.CreatedAt,
-			&i.UpdatedAt,
 			&i.Metadata,
 		); err != nil {
 			return nil, err
@@ -109,7 +92,7 @@ func (q *Queries) GetDroplets(ctx context.Context) ([]Droplet, error) {
 }
 
 const getDropletsByBucket = `-- name: GetDropletsByBucket :many
-SELECT id, bucket_id, name, initial_balance_cents, created_at, updated_at, metadata FROM droplets WHERE bucket_id = $1
+SELECT id, bucket_id, increases, amount_cents, created_at, metadata FROM droplets WHERE bucket_id = $1
 `
 
 func (q *Queries) GetDropletsByBucket(ctx context.Context, bucketID uuid.UUID) ([]Droplet, error) {
@@ -124,10 +107,9 @@ func (q *Queries) GetDropletsByBucket(ctx context.Context, bucketID uuid.UUID) (
 		if err := rows.Scan(
 			&i.ID,
 			&i.BucketID,
-			&i.Name,
-			&i.InitialBalanceCents,
+			&i.Increases,
+			&i.AmountCents,
 			&i.CreatedAt,
-			&i.UpdatedAt,
 			&i.Metadata,
 		); err != nil {
 			return nil, err
