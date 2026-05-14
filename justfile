@@ -1,8 +1,8 @@
 _help:
-  @echo ""
-  @just --list
+    @echo ""
+    @just --list
 
-p msg="chore: update":
-  @git add .
-  @git commit -m "{{ msg }}"
-  @git push
+p msg="update" mode="chore":
+    @git add .
+    @git commit -m "{{ mode }}: {{ msg }}"
+    @git push
