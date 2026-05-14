@@ -1,0 +1,2 @@
+- Add config file (process with `viper`)
+- Include currency as config value, default to USD
