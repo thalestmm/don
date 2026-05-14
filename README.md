@@ -2,7 +2,7 @@
 
 Simple, CLI-based, personal finances portfolio manager.
 
-Data is stored locally with a `csv` file for ease of portability and usage with spreadsheet apps.
+Data is stored locally within a `json` file for ease of portability and usage within other API's.
 
 ## Installation
 
