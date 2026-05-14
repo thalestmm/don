@@ -1,7 +1,0 @@
-name: don-env-local
-services:
-  db:
-    image: postgres:15
-    container_name: don-postgres-local
-    ports:
-      - "5432:5432"
