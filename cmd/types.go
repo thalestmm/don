@@ -40,6 +40,24 @@ func (r *Registry) AddEntry(entry Entry) {
 	r.Entries = append(r.Entries, entry)
 }
 
+func (r *Registry) ListAllEntries() []Entry {
+	return r.Entries
+}
+
+func (r *Registry) ListEntriesByResource(resource string) []Entry {
+	if !r.resourceExists(resource) {
+		return nil
+	}
+
+	var entries []Entry
+	for _, entry := range r.Entries {
+		if entry.Resource == resource {
+			entries = append(entries, entry)
+		}
+	}
+	return entries
+}
+
 func (r *Registry) Total() float64 {
 	total := 0.0
 	for _, entry := range r.Entries {
