@@ -24,12 +24,14 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var cfgFile string
+var ledgerFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -58,6 +60,12 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.don.yaml)")
+	wd, err := os.Getwd()
+	if err != nil {
+		printError(err)
+		os.Exit(1)
+	}
+	rootCmd.PersistentFlags().StringVar(&ledgerFile, "ledger", filepath.Join(wd, "don.json"), "ledger file")
 }
 
 // initConfig reads in config file and ENV variables if set.
