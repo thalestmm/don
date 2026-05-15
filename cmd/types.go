@@ -33,24 +33,24 @@ func NewLedger(currency string) *Ledger {
 	}
 }
 
-func (r *Ledger) AddEntry(entry Entry) {
+func (l *Ledger) AddEntry(entry Entry) {
 	if entry.DateTime.IsZero() {
 		entry.DateTime = time.Now()
 	}
-	r.Entries = append(r.Entries, entry)
+	l.Entries = append(l.Entries, entry)
 }
 
-func (r *Ledger) ListAllEntries() []Entry {
-	return r.Entries
+func (l Ledger) ListAllEntries() []Entry {
+	return l.Entries
 }
 
-func (r *Ledger) ListEntriesByResource(resource string) []Entry {
-	if !r.resourceExists(resource) {
+func (l Ledger) ListEntriesByResource(resource string) []Entry {
+	if !l.resourceExists(resource) {
 		return nil
 	}
 
 	var entries []Entry
-	for _, entry := range r.Entries {
+	for _, entry := range l.Entries {
 		if entry.Resource == resource {
 			entries = append(entries, entry)
 		}
@@ -58,9 +58,9 @@ func (r *Ledger) ListEntriesByResource(resource string) []Entry {
 	return entries
 }
 
-func (r *Ledger) Total() float64 {
+func (l Ledger) Total() float64 {
 	total := 0.0
-	for _, entry := range r.Entries {
+	for _, entry := range l.Entries {
 		if entry.IsPositive {
 			total += entry.Amount
 		} else {
@@ -70,30 +70,30 @@ func (r *Ledger) Total() float64 {
 	return total
 }
 
-func (r *Ledger) Resources() []string {
+func (l Ledger) Resources() []string {
 	var resources []string
-	for _, entry := range r.Entries {
+	for _, entry := range l.Entries {
 		resources = append(resources, entry.Resource)
 	}
 	return resources
 }
 
-func (r *Ledger) resourceExists(resource string) bool {
-	resources := r.Resources()
+func (l Ledger) resourceExists(resource string) bool {
+	resources := l.Resources()
 
 	return slices.Contains(resources, resource)
 }
 
-func (r *Ledger) TotalByResource(resource string) (float64, error) {
+func (l Ledger) TotalByResource(resource string) (float64, error) {
 	total := 0.0
 
 	// Early return an error if the resource does not exist
-	if !r.resourceExists(resource) {
+	if !l.resourceExists(resource) {
 		return total, ErrResourceNotFound
 	}
 
 	// Resource exists, query entries registered
-	for _, entry := range r.Entries {
+	for _, entry := range l.Entries {
 		if entry.Resource == resource {
 			if entry.IsPositive {
 				total += entry.Amount
@@ -108,13 +108,13 @@ func (r *Ledger) TotalByResource(resource string) (float64, error) {
 
 // SetAmountForResource creates a new entry with the amount necessary to total
 // the entire resource up to the desired amount.
-func (r *Ledger) SetAmountForResource(resource string, amount float64) error {
-	total, err := r.TotalByResource(resource)
+func (l *Ledger) SetAmountForResource(resource string, amount float64) error {
+	total, err := l.TotalByResource(resource)
 
 	// If resource does not exist, create a new entry with the desired amount
 	switch {
 	case errors.Is(err, ErrResourceNotFound):
-		r.AddEntry(Entry{
+		l.AddEntry(Entry{
 			Resource:   resource,
 			IsPositive: true,
 			Amount:     amount,
@@ -126,7 +126,7 @@ func (r *Ledger) SetAmountForResource(resource string, amount float64) error {
 		// Resource exists, calculate the delta and create a new entry
 		delta := amount - total
 
-		r.AddEntry(Entry{
+		l.AddEntry(Entry{
 			Resource:   resource,
 			IsPositive: delta > 0,
 			Amount:     delta,

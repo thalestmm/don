@@ -81,7 +81,7 @@ func init() {
 		os.Exit(1)
 	}
 	rootCmd.PersistentFlags().StringVar(&ledgerFile, "ledger", filepath.Join(wd, "don.json"), "ledger file")
-	rootCmd.PersistentFlags().StringVar(&currency, "currency", "USD", "default currency (overrided in case the ledger file already has a currency)")
+	rootCmd.PersistentFlags().StringVar(&currency, "currency", "USD", "default currency (overriden in case the ledger file already has a currency)")
 
 	// Bind the flag to Viper so the key "ledger" is available via
 	// viper.GetString("ledger"). Priority: flag > config file > default.
