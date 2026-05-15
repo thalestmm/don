@@ -121,7 +121,3 @@ func printResourceRow(name string, amount float64) {
 	fmt.Printf("  %-20s %s%s%.2f%s\n",
 		name, valueColor, prefix, amount, FontReset)
 }
-
-func dim(s string) string {
-	return "\033[2m" + s + FontReset
-}

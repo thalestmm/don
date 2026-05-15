@@ -23,3 +23,7 @@ func formatError(err error) string {
 func printError(err error) {
 	fmt.Println(formatError(err))
 }
+
+func dim(s string) string {
+	return "\033[2m" + s + FontReset
+}
