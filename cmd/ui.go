@@ -10,6 +10,7 @@ const (
 )
 
 const (
+	ColorDim    = "\033[2m"
 	ColorRed    = "\033[31m"
 	ColorGreen  = "\033[32m"
 	ColorYellow = "\033[33m"
@@ -25,5 +26,5 @@ func printError(err error) {
 }
 
 func dim(s string) string {
-	return "\033[2m" + s + FontReset
+	return ColorDim + s + FontReset
 }

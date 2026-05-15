@@ -124,7 +124,7 @@ func printResourceTable(resource string, currency string, entries []Entry) {
 		balPrefix = "-"
 		total = -total
 	}
-	fmt.Printf("  %18s   %s%s %s%s%s%.2f%s\n",
+	fmt.Printf("  %12s   %s%s %s%s%s%.2f%s\n",
 		"Balance:", ColorYellow, currency, FontReset,
 		balColor, balPrefix, total, FontReset)
 }
