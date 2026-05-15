@@ -51,7 +51,6 @@ func init() {
 
 func RunBalance(cmd *cobra.Command, args []string) {
 	resource, _ := cmd.Flags().GetString("resource")
-	total := 0.0
 
 	ledger, err := loadLedger()
 	if err != nil {
@@ -59,24 +58,70 @@ func RunBalance(cmd *cobra.Command, args []string) {
 	}
 
 	if resource == "" {
-		total = ledger.Total()
-		fmt.Printf("Total: %s%s%s %.2f%s\n\n", FontBold, ColorYellow, ledger.Currency, total, FontReset)
-
-		resources := ledger.Resources()
-		if len(resources) == 0 {
-			return
-		}
-		fmt.Printf("Detailed balances per resource:\n\n")
-		for _, r := range resources {
-			resTotal, _ := ledger.TotalByResource(r)
-			fmt.Printf("%s%s%s: \t%.2f\n", FontItalic, r, FontReset, resTotal)
-		}
+		printFullBalance(ledger)
 	} else {
-		total, err = ledger.TotalByResource(resource)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Printf("Total for %s: %.2f\n", resource, total)
+		printResourceBalance(ledger, resource)
+	}
+}
+
+func printFullBalance(ledger *Ledger) {
+	total := ledger.Total()
+	resources := ledger.Resources()
+
+	// Header
+	fmt.Printf("\n%s%s  BALANCE %s[%s]%s\n\n", FontBold, ColorBlue, ColorYellow, ledger.Currency, FontReset)
+
+	// Total row
+	prefix := " "
+	valueColor := ColorGreen
+	if total < 0 {
+		prefix = "-"
+		valueColor = ColorRed
+		total = -total
+	}
+	fmt.Printf("  %-20s %s%s%s%s%s%.2f%s\n",
+		"Total", FontBold, ColorYellow, FontReset, valueColor, prefix, total, FontReset)
+
+	if len(resources) == 0 {
+		fmt.Println()
+		return
 	}
 
+	// Divider
+	fmt.Printf("  %s\n", dim("────────────────────────────────────────"))
+
+	// Per-resource rows
+	for _, r := range resources {
+		resTotal, _ := ledger.TotalByResource(r)
+		printResourceRow(r, resTotal)
+	}
+
+	fmt.Printf("\n  %s%d%s resource(s)\n\n", FontItalic, len(resources), FontReset)
+}
+
+func printResourceBalance(ledger *Ledger, resource string) {
+	total, err := ledger.TotalByResource(resource)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("\n%s%s📋 %s%s\n\n", FontBold, ColorBlue, resource, FontReset)
+	printResourceRow(resource, total)
+	fmt.Println()
+}
+
+func printResourceRow(name string, amount float64) {
+	valueColor := ColorGreen
+	prefix := " "
+	if amount < 0 {
+		valueColor = ColorRed
+		prefix = "-"
+		amount = -amount
+	}
+	fmt.Printf("  %-20s %s%s%.2f%s\n",
+		name, valueColor, prefix, amount, FontReset)
+}
+
+func dim(s string) string {
+	return "\033[2m" + s + FontReset
 }
