@@ -28,7 +28,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -88,10 +87,16 @@ func init() {
 	viper.BindPFlag("ledger", rootCmd.PersistentFlags().Lookup("ledger"))
 	viper.BindPFlag("currency", rootCmd.PersistentFlags().Lookup("currency"))
 
-	// Step 2: Schedule validation to run AFTER flag parsing.
-	// PersistentPreRunE fires after OnInitialize (config load) but
-	// before Run. This is where you validate and set up resources.
+	// Step 2: Resolve final values and validate AFTER flag + config load.
+	// PersistentPreRunE fires after OnInitialize, so both command-line
+	// flags and config file values are available in viper.
+	// viper.BindPFlag ensures: flag > config > default.
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		// Pull viper's resolved values back into our Go variables.
+		// If --ledger was passed, that wins. Otherwise config file.
+		// Otherwise the default set in init().
+		ledgerFile = viper.GetString("ledger")
+		currency = viper.GetString("currency")
 		return setupLedgerFile()
 	}
 }
@@ -105,22 +110,44 @@ func setupLedgerFile() error {
 	}
 
 	if _, err := os.Stat(ledgerFile); os.IsNotExist(err) {
-		var defaultLedger = NewLedger(viper.GetString("currency"))
-		var exampleEntry = Entry{
-			DateTime:   time.Now(),
-			Resource:   "don-example",
-			IsPositive: true,
-			Amount:     0,
-		}
-		defaultLedger.AddEntry(exampleEntry)
-		bytes, err := json.MarshalIndent(defaultLedger, "", "  ")
+		ledger := NewLedger(currency)
+		bytes, err := json.MarshalIndent(ledger, "", "  ")
 		if err != nil {
 			return fmt.Errorf("failed to marshal default ledger: %w", err)
 		}
 		if err := os.WriteFile(ledgerFile, bytes, 0644); err != nil {
 			return fmt.Errorf("failed to create ledger file %q: %w", ledgerFile, err)
 		}
-		fmt.Println("a new example file was created in", ledgerFile)
+		fmt.Fprintf(os.Stderr, "Created new ledger file: %s\n", ledgerFile)
+	}
+
+	return nil
+}
+
+// loadLedger reads and parses the ledger file from disk.
+func loadLedger() (*Ledger, error) {
+	data, err := os.ReadFile(ledgerFile)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read ledger file: %w", err)
+	}
+
+	var ledger Ledger
+	if err := json.Unmarshal(data, &ledger); err != nil {
+		return nil, fmt.Errorf("failed to parse ledger file: %w", err)
+	}
+
+	return &ledger, nil
+}
+
+// saveLedger marshals the ledger and writes it back to disk.
+func saveLedger(ledger *Ledger) error {
+	bytes, err := json.MarshalIndent(ledger, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal ledger: %w", err)
+	}
+
+	if err := os.WriteFile(ledgerFile, bytes, 0644); err != nil {
+		return fmt.Errorf("failed to write ledger file: %w", err)
 	}
 
 	return nil
