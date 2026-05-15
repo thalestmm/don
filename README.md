@@ -16,4 +16,6 @@ go install github.com/thalestmm/don@latest
 
 ---
 
+*Own your finances.*
+
 Built with `go` and `cobra`.
