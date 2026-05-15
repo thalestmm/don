@@ -74,11 +74,38 @@ func RunAdd(cmd *cobra.Command, args []string) {
 		panic(err)
 	}
 
-	fmt.Println("Entry added successfully!")
+	// Header
+	direction := "inflow"
+	icon := ""
+	valueColor := ColorGreen
+	prefix := "+"
+	if outflow {
+		direction = "outflow"
+		icon = ""
+		valueColor = ColorRed
+		prefix = "-"
+	}
 
+	fmt.Printf("\n%s%s  Entry added %s%s\n\n", FontBold, ColorBlue, icon, FontReset)
+	fmt.Printf("  %-12s %s\n", "Resource:", resource)
+	fmt.Printf("  %-12s %s\n", "Type:", direction)
+	fmt.Printf("  %-12s %s%s %s%s%s%.2f%s\n", "Amount:", ColorYellow, ledger.Currency, FontReset, valueColor, prefix, amount, FontReset)
+	fmt.Printf("  %-12s %s\n", "Date:", entry.DateTime.Format("2006-01-02 15:04"))
+
+	// Updated balance
 	resourceTotal, err := ledger.TotalByResource(resource)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Total for %s: %.2f\n", resource, resourceTotal)
+
+	balColor := ColorGreen
+	balPrefix := " "
+	if resourceTotal < 0 {
+		balColor = ColorRed
+		balPrefix = "-"
+		resourceTotal = -resourceTotal
+	}
+
+	fmt.Printf("\n  %sUpdated balance for %s:%s %s%s%.2f%s\n\n",
+		FontItalic, resource, FontReset, balColor, balPrefix, resourceTotal, FontReset)
 }
