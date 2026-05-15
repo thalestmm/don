@@ -6,6 +6,8 @@ Data is stored locally within a `json` ledger file for ease of portability and u
 
 You can have multiple ledger files, each with a unique name and currency.
 
+**Project under active development, expect breaking API changes.**
+
 ## Installation
 
 ```bash
