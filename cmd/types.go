@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"errors"
+	"math"
 	"slices"
 	"time"
 )
@@ -126,11 +127,11 @@ func (l *Ledger) SetAmountForResource(resource string, amount float64) error {
 		return err
 	default:
 		// Resource exists, calculate the delta and create a new entry
-		delta := amount - total
+		delta := math.Abs(amount - total)
 
 		l.AddEntry(Entry{
 			Resource:   resource,
-			IsPositive: delta > 0,
+			IsPositive: amount > total,
 			Amount:     delta,
 		})
 		return nil
