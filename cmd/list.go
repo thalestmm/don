@@ -94,16 +94,14 @@ func printResourceTable(resource string, currency string, entries []Entry) {
 	fmt.Printf("  %s\n", dim("────────────────────────────────────────"))
 
 	// Column headers
-	fmt.Printf("  %-18s %-9s %s\n", "Date", "Type", "Amount")
+	fmt.Printf("  %-18s %s\n", "Date", "Amount")
 
 	// Entries
 	var total float64
 	for _, e := range entries {
-		typeLabel := "inflow"
 		valueColor := ColorGreen
 		sign := "+"
 		if !e.IsPositive {
-			typeLabel = "outflow"
 			valueColor = ColorRed
 			sign = "-"
 			total -= e.Amount
@@ -111,10 +109,8 @@ func printResourceTable(resource string, currency string, entries []Entry) {
 			total += e.Amount
 		}
 
-		fmt.Printf("  %-18s %-9s %s%s %s%s%s%.2f%s\n",
+		fmt.Printf("  %-18s %s%s%.2f%s\n",
 			e.DateTime.Format("2006-01-02 15:04"),
-			typeLabel,
-			ColorYellow, currency, FontReset,
 			valueColor, sign, e.Amount, FontReset)
 	}
 
