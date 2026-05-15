@@ -44,11 +44,7 @@ var rootCmd = &cobra.Command{
 	Long: `don is a simple personal finances portfolio manager.
 
 Track your assets across different resources (bank accounts, crypto wallets,
-cash, etc.) in a single JSON ledger file.
-
-Examples:
-  don                      # use $PWD/don.json
-  don --ledger finances.json`,
+cash, etc.) in a single JSON ledger file.`,
 	// A Run function (even empty) is required for cobra to show flags in --help
 	// and to trigger PersistentPreRunE hooks.
 	Run: func(cmd *cobra.Command, args []string) {
