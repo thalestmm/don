@@ -73,7 +73,9 @@ func (l Ledger) Total() float64 {
 func (l Ledger) Resources() []string {
 	var resources []string
 	for _, entry := range l.Entries {
-		resources = append(resources, entry.Resource)
+		if !slices.Contains(resources, entry.Resource) {
+			resources = append(resources, entry.Resource)
+		}
 	}
 	return resources
 }
