@@ -24,17 +24,19 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var cfgFile string
+var dataFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "don",
-	Short: fmt.Sprintf("%s%sdon%s is a simple personal finances portfolio manager.", FontBold, ColorYellow, FontReset),
+	Short: fmt.Sprintf("%s%sdon%s is a simple personal finances portfolio manager.", FontBold, ColorRed, FontReset),
 	Long:  "",
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
@@ -58,10 +60,11 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.don.yaml)")
+	wd, err := os.Getwd()
+	cobra.CheckErr(err)
+	rootCmd.PersistentFlags().StringVar(&dataFile, "data", filepath.Join(wd, "don.json"), "data file (default is $PWD/don.json)")
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	viper.Set("data", dataFile)
 }
 
 // initConfig reads in config file and ENV variables if set.

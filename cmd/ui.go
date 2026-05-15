@@ -19,3 +19,7 @@ const (
 func formatError(err error) string {
 	return fmt.Sprintf("%s%s%s", ColorRed, err.Error(), FontReset)
 }
+
+func printError(err error) {
+	fmt.Println(formatError(err))
+}
