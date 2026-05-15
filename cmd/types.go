@@ -11,9 +11,9 @@ var (
 	ErrResourceNotFound = errors.New("resource not found")
 )
 
-// Registry represents the entire portfolio registry.
+// Ledger represents the entire portfolio registry.
 // It is the main structure for the stored JSON file.
-type Registry struct {
+type Ledger struct {
 	Currency string  `json:"currency,omitempty"`
 	Entries  []Entry `json:"entries"`
 }
@@ -26,25 +26,25 @@ type Entry struct {
 	Amount     float64   `json:"amount"`
 }
 
-func NewRegistry(currency string) *Registry {
-	return &Registry{
+func NewRegistry(currency string) *Ledger {
+	return &Ledger{
 		Currency: currency,
 		Entries:  []Entry{},
 	}
 }
 
-func (r *Registry) AddEntry(entry Entry) {
+func (r *Ledger) AddEntry(entry Entry) {
 	if entry.DateTime.IsZero() {
 		entry.DateTime = time.Now()
 	}
 	r.Entries = append(r.Entries, entry)
 }
 
-func (r *Registry) ListAllEntries() []Entry {
+func (r *Ledger) ListAllEntries() []Entry {
 	return r.Entries
 }
 
-func (r *Registry) ListEntriesByResource(resource string) []Entry {
+func (r *Ledger) ListEntriesByResource(resource string) []Entry {
 	if !r.resourceExists(resource) {
 		return nil
 	}
@@ -58,7 +58,7 @@ func (r *Registry) ListEntriesByResource(resource string) []Entry {
 	return entries
 }
 
-func (r *Registry) Total() float64 {
+func (r *Ledger) Total() float64 {
 	total := 0.0
 	for _, entry := range r.Entries {
 		if entry.IsPositive {
@@ -70,7 +70,7 @@ func (r *Registry) Total() float64 {
 	return total
 }
 
-func (r *Registry) Resources() []string {
+func (r *Ledger) Resources() []string {
 	var resources []string
 	for _, entry := range r.Entries {
 		resources = append(resources, entry.Resource)
@@ -78,13 +78,13 @@ func (r *Registry) Resources() []string {
 	return resources
 }
 
-func (r *Registry) resourceExists(resource string) bool {
+func (r *Ledger) resourceExists(resource string) bool {
 	resources := r.Resources()
 
 	return slices.Contains(resources, resource)
 }
 
-func (r *Registry) TotalByResource(resource string) (float64, error) {
+func (r *Ledger) TotalByResource(resource string) (float64, error) {
 	total := 0.0
 
 	// Early return an error if the resource does not exist
@@ -108,7 +108,7 @@ func (r *Registry) TotalByResource(resource string) (float64, error) {
 
 // SetAmountForResource creates a new entry with the amount necessary to total
 // the entire resource up to the desired amount.
-func (r *Registry) SetAmountForResource(resource string, amount float64) error {
+func (r *Ledger) SetAmountForResource(resource string, amount float64) error {
 	total, err := r.TotalByResource(resource)
 
 	// If resource does not exist, create a new entry with the desired amount
