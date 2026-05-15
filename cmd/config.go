@@ -32,8 +32,9 @@ import (
 
 // configCmd represents the config command
 var configCmd = &cobra.Command{
-	Use:   "config",
-	Short: "Edit the configuration file",
+	Use:     "config",
+	Aliases: []string{"cfg"},
+	Short:   "Edit the configuration file",
 	Run: func(cmd *cobra.Command, args []string) {
 		nvimCmd := exec.Command("nvim", viper.ConfigFileUsed())
 		nvimCmd.Stdin = os.Stdin

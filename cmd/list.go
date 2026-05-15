@@ -29,9 +29,10 @@ import (
 
 // listCmd represents the list command
 var listCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List the ledger entries",
-	Run:   RunList,
+	Use:     "list",
+	Aliases: []string{"ls"},
+	Short:   "List the ledger entries",
+	Run:     RunList,
 }
 
 func init() {

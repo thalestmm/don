@@ -29,9 +29,10 @@ import (
 
 // balanceCmd represents the balance command
 var balanceCmd = &cobra.Command{
-	Use:   "balance",
-	Short: "Get the balance of the ledger, either total or per resource",
-	Run:   RunBalance,
+	Use:     "balance",
+	Aliases: []string{"blc"},
+	Short:   "Get the balance of the ledger, either total or per resource",
+	Run:     RunBalance,
 }
 
 func init() {
