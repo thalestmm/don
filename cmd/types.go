@@ -26,7 +26,7 @@ type Entry struct {
 	Amount     float64   `json:"amount"`
 }
 
-func NewRegistry(currency string) *Ledger {
+func NewLedger(currency string) *Ledger {
 	return &Ledger{
 		Currency: currency,
 		Entries:  []Entry{},

@@ -22,9 +22,13 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -32,15 +36,25 @@ import (
 
 var cfgFile string
 var ledgerFile string
+var currency string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "don",
 	Short: fmt.Sprintf("%s%sdon%s is a simple personal finances portfolio manager.", FontBold, ColorRed, FontReset),
-	Long:  "",
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Long: `don is a simple personal finances portfolio manager.
+
+Track your assets across different resources (bank accounts, crypto wallets,
+cash, etc.) in a single JSON ledger file.
+
+Examples:
+  don                      # use $PWD/don.json
+  don --ledger finances.json`,
+	// A Run function (even empty) is required for cobra to show flags in --help
+	// and to trigger PersistentPreRunE hooks.
+	Run: func(cmd *cobra.Command, args []string) {
+		// Main application logic will go here
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -53,19 +67,62 @@ func Execute() {
 }
 
 func init() {
+	// Step 1: ONLY register flags and hooks. No business logic.
+	// At this point os.Args has NOT been parsed, so ledgerFile
+	// still holds the default value set below.
+
 	cobra.OnInitialize(initConfig)
 
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.don.yaml)")
+
 	wd, err := os.Getwd()
 	if err != nil {
 		printError(err)
 		os.Exit(1)
 	}
 	rootCmd.PersistentFlags().StringVar(&ledgerFile, "ledger", filepath.Join(wd, "don.json"), "ledger file")
+	rootCmd.PersistentFlags().StringVar(&currency, "currency", "USD", "default currency (overrided in case the ledger file already has a currency)")
+
+	// Bind the flag to Viper so the key "ledger" is available via
+	// viper.GetString("ledger"). Priority: flag > config file > default.
+	viper.BindPFlag("ledger", rootCmd.PersistentFlags().Lookup("ledger"))
+	viper.BindPFlag("currency", rootCmd.PersistentFlags().Lookup("currency"))
+
+	// Step 2: Schedule validation to run AFTER flag parsing.
+	// PersistentPreRunE fires after OnInitialize (config load) but
+	// before Run. This is where you validate and set up resources.
+	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		return setupLedgerFile()
+	}
+}
+
+// setupLedgerFile validates the ledger path and creates the file if needed.
+// Called from PersistentPreRunE, so ledgerFile already has the user's value
+// (or the default if no flag was passed).
+func setupLedgerFile() error {
+	if !strings.HasSuffix(ledgerFile, ".json") {
+		return errors.New("ledger file must be a JSON file")
+	}
+
+	var defaultLedger = NewLedger(viper.GetString("currency"))
+	var exampleEntry = Entry{
+		DateTime:   time.Now(),
+		Resource:   "don-example",
+		IsPositive: true,
+		Amount:     0,
+	}
+	defaultLedger.AddEntry(exampleEntry)
+	bytes, err := json.MarshalIndent(defaultLedger, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal default ledger: %w", err)
+	}
+	if _, err := os.Stat(ledgerFile); os.IsNotExist(err) {
+		if err := os.WriteFile(ledgerFile, bytes, 0644); err != nil {
+			return fmt.Errorf("failed to create ledger file %q: %w", ledgerFile, err)
+		}
+	}
+
+	return nil
 }
 
 // initConfig reads in config file and ENV variables if set.

@@ -1,0 +1,11 @@
+{
+  "currency": "USD",
+  "entries": [
+    {
+      "datetime": "2026-05-14T22:49:29.484498-03:00",
+      "resource": "don-example",
+      "isPositive": true,
+      "amount": 0
+    }
+  ]
+}
