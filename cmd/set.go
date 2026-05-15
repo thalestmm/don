@@ -22,6 +22,8 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -79,4 +81,34 @@ func RunSet(cmd *cobra.Command, args []string) {
 		return
 	}
 
+	// Header
+	valueColor := ColorGreen
+	prefix := " "
+	if amount < 0 {
+		valueColor = ColorRed
+		prefix = "-"
+		amount = -amount
+	}
+
+	fmt.Printf("\n%s%s  SET [%s]%s\n\n", FontBold, ColorBlue, resource, FontReset)
+	fmt.Printf("  %-12s %s\n", "Resource:", resource)
+	fmt.Printf("  %-12s %s%s %s%s%s%.2f%s\n", "Set to:", ColorYellow, ledger.Currency, FontReset, valueColor, prefix, amount, FontReset)
+
+	// Updated balance
+	resourceTotal, err := ledger.TotalByResource(resource)
+	if err != nil {
+		cmd.Println(err)
+		return
+	}
+
+	balColor := ColorGreen
+	balPrefix := " "
+	if resourceTotal < 0 {
+		balColor = ColorRed
+		balPrefix = "-"
+		resourceTotal = -resourceTotal
+	}
+
+	fmt.Printf("\n  %sUpdated balance for %s:%s %s%s%.2f%s\n\n",
+		FontItalic, resource, FontReset, balColor, balPrefix, resourceTotal, FontReset)
 }

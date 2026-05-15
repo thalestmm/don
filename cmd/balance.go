@@ -105,7 +105,7 @@ func printResourceBalance(ledger *Ledger, resource string) {
 		panic(err)
 	}
 
-	fmt.Printf("\n%s%s📋 %s%s\n\n", FontBold, ColorBlue, resource, FontReset)
+	fmt.Printf("\n%s%s  BALANCE [%s]%s\n\n", FontBold, ColorBlue, resource, FontReset)
 	printResourceRow(resource, total)
 	fmt.Println()
 }

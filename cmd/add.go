@@ -76,17 +76,15 @@ func RunAdd(cmd *cobra.Command, args []string) {
 
 	// Header
 	direction := "inflow"
-	icon := ""
 	valueColor := ColorGreen
 	prefix := "+"
 	if outflow {
 		direction = "outflow"
-		icon = ""
 		valueColor = ColorRed
 		prefix = "-"
 	}
 
-	fmt.Printf("\n%s%s  Entry added %s%s\n\n", FontBold, ColorBlue, icon, FontReset)
+	fmt.Printf("\n%s%s  ADD [%s]%s\n\n", FontBold, ColorBlue, resource, FontReset)
 	fmt.Printf("  %-12s %s\n", "Resource:", resource)
 	fmt.Printf("  %-12s %s\n", "Type:", direction)
 	fmt.Printf("  %-12s %s%s %s%s%s%.2f%s\n", "Amount:", ColorYellow, ledger.Currency, FontReset, valueColor, prefix, amount, FontReset)
