@@ -1,2 +1,2 @@
-- Add config file (process with `viper`)
 - Include currency as config value, default to USD
+- Add `export` (to CSV) command with optional output path flag
