@@ -69,7 +69,7 @@ func RunBalance(cmd *cobra.Command, args []string) {
 		fmt.Printf("Detailed balances per resource:\n\n")
 		for _, r := range resources {
 			resTotal, _ := ledger.TotalByResource(r)
-			fmt.Printf("%s: %.2f\n", r, resTotal)
+			fmt.Printf("%s%s%s: \t%.2f\n", FontItalic, r, FontReset, resTotal)
 		}
 	} else {
 		total, err = ledger.TotalByResource(resource)
