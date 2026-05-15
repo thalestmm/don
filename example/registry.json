@@ -1,0 +1,11 @@
+{
+  "currency": "USD",
+  "entries": [
+    {
+      "datetime": "",
+      "resource": "bank-a",
+      "isPositive": true,
+      "amount": 0.0
+    }
+  ]
+}
