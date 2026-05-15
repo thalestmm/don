@@ -104,22 +104,23 @@ func setupLedgerFile() error {
 		return errors.New("ledger file must be a JSON file")
 	}
 
-	var defaultLedger = NewLedger(viper.GetString("currency"))
-	var exampleEntry = Entry{
-		DateTime:   time.Now(),
-		Resource:   "don-example",
-		IsPositive: true,
-		Amount:     0,
-	}
-	defaultLedger.AddEntry(exampleEntry)
-	bytes, err := json.MarshalIndent(defaultLedger, "", "  ")
-	if err != nil {
-		return fmt.Errorf("failed to marshal default ledger: %w", err)
-	}
 	if _, err := os.Stat(ledgerFile); os.IsNotExist(err) {
+		var defaultLedger = NewLedger(viper.GetString("currency"))
+		var exampleEntry = Entry{
+			DateTime:   time.Now(),
+			Resource:   "don-example",
+			IsPositive: true,
+			Amount:     0,
+		}
+		defaultLedger.AddEntry(exampleEntry)
+		bytes, err := json.MarshalIndent(defaultLedger, "", "  ")
+		if err != nil {
+			return fmt.Errorf("failed to marshal default ledger: %w", err)
+		}
 		if err := os.WriteFile(ledgerFile, bytes, 0644); err != nil {
 			return fmt.Errorf("failed to create ledger file %q: %w", ledgerFile, err)
 		}
+		fmt.Println("a new example file was created in", ledgerFile)
 	}
 
 	return nil
