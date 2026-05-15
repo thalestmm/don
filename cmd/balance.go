@@ -60,7 +60,7 @@ func RunBalance(cmd *cobra.Command, args []string) {
 
 	if resource == "" {
 		total = ledger.Total()
-		fmt.Printf("Total: %.2f\n\n", total)
+		fmt.Printf("Total: %s%s%s %.2f%s\n\n", FontBold, ColorYellow, ledger.Currency, total, FontReset)
 
 		resources := ledger.Resources()
 		if len(resources) == 0 {
